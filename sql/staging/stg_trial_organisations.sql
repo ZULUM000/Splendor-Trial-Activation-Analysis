@@ -1,10 +1,3 @@
--- models/staging/stg_trial_organisations.sql
--- ─────────────────────────────────────────────────────────────────────────────
--- Staging: one row per organisation with trial metadata and engagement stats.
--- Source:  {{ ref('stg_trial_events') }}
--- Grain:   one row per organization_id
--- ─────────────────────────────────────────────────────────────────────────────
-
 WITH events AS (
 
     SELECT * FROM {{ ref('stg_trial_events') }}

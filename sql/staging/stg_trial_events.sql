@@ -1,9 +1,4 @@
--- models/staging/stg_trial_events.sql
--- ─────────────────────────────────────────────────────────────────────────────
--- Staging: clean, type-cast, deduplicate, and enrich raw trial events.
--- Source:  {{ source('raw', 'trial_events') }}
--- Grain:   one row per event (post-dedup)
--- ─────────────────────────────────────────────────────────────────────────────
+
 
 WITH source AS (
 

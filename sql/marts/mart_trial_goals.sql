@@ -1,47 +1,4 @@
--- models/marts/mart_trial_goals.sql
--- ─────────────────────────────────────────────────────────────────────────────
--- MART: Trial Goals
--- Grain: one row per organization_id
--- Tracks whether each trialist has completed each of the four defined
--- trial goals, along with the timestamp of first completion per goal.
---
--- ┌─────────────────────────────────────────────────────────────────────────┐
--- │  GOAL DEFINITIONS                                                       │
--- ├─────────────────────────────────────────────────────────────────────────┤
--- │                                                                         │
--- │  G1 – Early Schedule Setup                                              │
--- │       ≥2 shifts created within the first 3 days of trial.              │
--- │       Rationale: Orgs creating 2+ shifts in 3 days invest early and    │
--- │       deliberately. 61.4% of orgs reach this, CR = 23.1% (1.08x).     │
--- │       The 3-day window captures committed early adopters.               │
--- │                                                                         │
--- │  G2 – Live Operations Proof                                             │
--- │       Mobile.Schedule.Loaded AND (PunchClock.PunchedIn OR              │
--- │       Scheduling.Shift.AssignmentChanged) — any time in trial.         │
--- │       Rationale: Mobile + operational event = a live team using the    │
--- │       product, not just a solo admin setup. 27.6% reach this,          │
--- │       CR = 23.2% (1.09x). Hardest signal to fake — requires staff      │
--- │       onboarding.                                                       │
--- │                                                                         │
--- │  G3 – Admin Approval Workflow                                           │
--- │       ≥2 shifts approved (Scheduling.Shift.Approved).                  │
--- │       Rationale: 2+ approvals confirms a repeatable approval cycle,    │
--- │       not a one-off test. Gateway to payroll. 13.9% reach this,        │
--- │       CR = 23.9% (1.12x — highest single-activity lift).               │
--- │                                                                         │
--- │  G4 – Sustained Return Engagement                                       │
--- │       Active in at least 3 distinct trial weeks.                       │
--- │       Rationale: Returning for 3 weeks requires genuine product        │
--- │       adoption. Strongest signal in the data: 17.2% of orgs,          │
--- │       CR = 24.7% (1.16x — highest in the dataset).                     │
--- │                                                                         │
--- │  NOTE: All goals are HYPOTHESES, not proven conversion levers.         │
--- │  The model AUC (≈0.50–0.54) confirms that in-trial behaviour cannot   │
--- │  deterministically predict conversion, as 51.9% of conversions occur  │
--- │  after day 30, driven by post-trial sales/procurement processes.       │
--- │  Goals should be validated via A/B testing once instrumented.          │
--- └─────────────────────────────────────────────────────────────────────────┘
--- ─────────────────────────────────────────────────────────────────────────────
+
 
 WITH events AS (
 
@@ -55,7 +12,7 @@ orgs AS (
 
 ),
 
--- ── Goal 1: ≥2 shifts created within first 3 days ────────────────────────────
+-- ── Goal 1: ≥2 shifts created within first 3 days
 g1_data AS (
 
     SELECT
@@ -80,7 +37,7 @@ g1 AS (
 
 ),
 
--- ── Goal 2: Mobile view + operational event (any point in trial) ─────────────
+-- ── Goal 2: Mobile view + operational event (any point in trial)
 g2_mobile AS (
 
     SELECT DISTINCT
@@ -120,7 +77,7 @@ g2 AS (
 
 ),
 
--- ── Goal 3: ≥2 shifts approved ───────────────────────────────────────────────
+-- ── Goal 3: ≥2 shifts approved 
 g3_data AS (
 
     SELECT
@@ -150,7 +107,7 @@ g3 AS (
 
 ),
 
--- ── Goal 4: Active in ≥3 distinct trial weeks ─────────────────────────────────
+-- ── Goal 4: Active in ≥3 distinct trial weeks 
 g4_data AS (
 
     SELECT
@@ -171,7 +128,7 @@ g4 AS (
 
 ),
 
--- ── Combine all goals ─────────────────────────────────────────────────────────
+-- ── Combine all goals 
 combined AS (
 
     SELECT
@@ -182,25 +139,25 @@ combined AS (
         o.trial_cohort_month,
         o.conversion_timing_bucket,
 
-        -- ── Goal 1 ──
+        --Goal 1
         COALESCE(g1.goal_1_met, FALSE)              AS goal_1_early_schedule,
         g1.g1_first_shift_at                        AS goal_1_completed_at,
         COALESCE(g1.g1_shifts_in_3_days, 0)         AS g1_shifts_in_first_3_days,
 
-        -- ── Goal 2 ──
+        --Goal 2
         COALESCE(g2.goal_2_met, FALSE)              AS goal_2_live_operations,
         g2.goal_2_completed_at,
 
-        -- ── Goal 3 ──
+        --Goal 3
         COALESCE(g3.goal_3_met, FALSE)              AS goal_3_approval_workflow,
         g3.goal_3_completed_at,
         COALESCE(g3.g3_approvals_count, 0)          AS g3_shift_approvals,
 
-        -- ── Goal 4 ──
+        --Goal 4
         COALESCE(g4.goal_4_met, FALSE)              AS goal_4_sustained_return,
         COALESCE(g4.g4_weeks_active, 0)             AS g4_weeks_active,
 
-        -- ── Summary ──
+        --Summary
         (
             COALESCE(g1.goal_1_met, FALSE)::INTEGER +
             COALESCE(g2.goal_2_met, FALSE)::INTEGER +

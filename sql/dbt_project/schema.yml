@@ -2,7 +2,6 @@ version: 2
 
 models:
 
-  # ── STAGING ────────────────────────────────────────────────────────────────
   - name: stg_trial_events
     description: >
       Clean, deduplicated, enriched event-level table.
@@ -73,7 +72,6 @@ models:
           Values: Not converted, Within trial, Post-trial (31–45d),
           Post-trial (45d+).
 
-  # ── MARTS ──────────────────────────────────────────────────────────────────
   - name: mart_trial_goals
     description: >
       One row per organisation. Tracks completion of the four trial goals
