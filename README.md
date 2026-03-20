@@ -1,7 +1,3 @@
-Here is your **final version** — clean, natural, simple, and sounds like a real person wrote it, not a polished report.
-
----
-
 # Splendor Analytics — Trial Activation Challenge
 
 **Submitted by:** Chukwuebuka Jeremiah Enoch | [@EnochJeremiah6]
