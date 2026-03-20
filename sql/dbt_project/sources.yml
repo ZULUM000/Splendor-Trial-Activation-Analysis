@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: raw
+    description: >
+      Raw event-level data loaded from the Splendor Analytics trial
+      activation CSV extract. Contains one row per product event performed
+      by an organisation during its 30-day free trial.
+    schema: raw
+    tables:
+      - name: trial_events
+        description: >
+          Behavioural event log for all trial organisations. Covers the
+          period January–March 2024. Contains 170,526 raw rows of which
+          67,631 (39.7%) are exact duplicates removed in the staging layer.
+        columns:
+          - name: organization_id
+            description: Unique identifier for each trialling organisation.
+          - name: activity_name
+            description: >
+              Name of the product activity performed. See Attachment 1 of
+              the challenge brief for full descriptions.
+          - name: timestamp
+            description: UTC datetime when the activity occurred.
+          - name: converted
+            description: >
+              Boolean. Whether the organisation ultimately converted to a
+              paid subscription. Note: 51.9% of conversions occur after
+              the 30-day trial end date — this field reflects the final
+              outcome, not a within-trial signal.
+          - name: converted_at
+            description: >
+              UTC datetime of conversion. NULL for organisations that did
+              not convert.
+          - name: trial_start
+            description: UTC datetime when the trial period began.
+          - name: trial_end
+            description: >
+              UTC datetime when the trial expires (trial_start + 30 days).

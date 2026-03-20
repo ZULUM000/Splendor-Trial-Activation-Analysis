@@ -1,0 +1,140 @@
+version: 2
+
+models:
+
+  # ── STAGING ────────────────────────────────────────────────────────────────
+  - name: stg_trial_events
+    description: >
+      Clean, deduplicated, enriched event-level table.
+      39.7% of raw rows removed as exact duplicates.
+      All events filtered to the valid 0–30 day trial window.
+    columns:
+      - name: organization_id
+        description: Unique org identifier.
+        tests: [not_null]
+      - name: activity_name
+        description: Product activity name.
+        tests: [not_null]
+      - name: event_at
+        description: Parsed UTC event timestamp.
+        tests: [not_null]
+      - name: converted
+        description: Final conversion outcome for this org.
+        tests: [not_null, accepted_values: {values: [true, false]}]
+      - name: days_into_trial
+        description: Float. Days elapsed since trial start at event time.
+        tests: [not_null]
+      - name: trial_week
+        description: Integer 1–4. Trial week bucket (1=days 0–6, … 4=days 21–30).
+        tests: [not_null, accepted_values: {values: [1, 2, 3, 4]}]
+      - name: module
+        description: >
+          High-level product module classification.
+          Values: Scheduling, Mobile, PunchClock, Absence, Payroll,
+          Communication, Other.
+        tests: [not_null]
+      - name: is_within_trial_window
+        description: Always TRUE after the WHERE filter in this model.
+
+  - name: stg_trial_organisations
+    description: >
+      One row per organisation. Aggregates engagement stats from
+      stg_trial_events and adds derived metadata.
+    columns:
+      - name: organization_id
+        description: Unique org identifier.
+        tests: [not_null, unique]
+      - name: converted
+        description: Final conversion outcome.
+        tests: [not_null]
+      - name: total_events
+        description: Total clean event count within trial window.
+      - name: distinct_activities
+        description: Number of distinct activity types performed.
+      - name: distinct_modules_used
+        description: Number of distinct product modules touched.
+      - name: active_days
+        description: Number of calendar days with at least one event.
+      - name: distinct_weeks_active
+        description: Number of trial weeks (1–4) with at least one event.
+      - name: active_in_week_1
+        description: Boolean flag. 1 if org had any event in trial week 1.
+      - name: active_in_week_2
+        description: Boolean flag. 1 if org had any event in trial week 2.
+      - name: active_in_week_3
+        description: Boolean flag. 1 if org had any event in trial week 3.
+      - name: active_in_week_4
+        description: Boolean flag. 1 if org had any event in trial week 4.
+      - name: trial_cohort_month
+        description: Calendar month the trial started (used for cohort analysis).
+      - name: conversion_timing_bucket
+        description: >
+          Categorises WHEN conversion occurred relative to trial end.
+          Values: Not converted, Within trial, Post-trial (31–45d),
+          Post-trial (45d+).
+
+  # ── MARTS ──────────────────────────────────────────────────────────────────
+  - name: mart_trial_goals
+    description: >
+      One row per organisation. Tracks completion of the four trial goals
+      with supporting counts and completion timestamps.
+
+      IMPORTANT: Goals are designed as engagement-quality hypotheses grounded
+      in product-value logic. Statistical predictive power is intentionally
+      modest (all individual goal lifts 1.08–1.16x) because 51.9% of
+      conversions occur post-trial, outside the behavioural log. Goals should
+      be validated via A/B testing before use in automated decision-making.
+    columns:
+      - name: organization_id
+        tests: [not_null, unique]
+      - name: goal_1_early_schedule
+        description: >
+          TRUE if org created ≥2 shifts within the first 3 days.
+          Evidence: 61.4% completion rate, CR=23.1%, lift=1.08x.
+      - name: goal_2_live_operations
+        description: >
+          TRUE if org loaded mobile schedule AND performed a punch-in or
+          shift assignment change (any time in trial).
+          Evidence: 27.6% completion, CR=23.2%, lift=1.09x.
+      - name: goal_3_approval_workflow
+        description: >
+          TRUE if org approved ≥2 shifts.
+          Evidence: 13.9% completion, CR=23.9%, lift=1.12x.
+      - name: goal_4_sustained_return
+        description: >
+          TRUE if org was active in ≥3 distinct trial weeks.
+          Evidence: 17.2% completion, CR=24.7%, lift=1.16x (highest).
+      - name: goals_completed_count
+        description: Integer 0–4. Count of goals completed.
+      - name: all_goals_completed
+        description: TRUE if all four goals are met (Trial Activation).
+
+  - name: mart_trial_activation
+    description: >
+      One row per organisation. Primary activation mart for dashboards,
+      funnel reporting, and intervention triggers.
+      Includes activation stage, days to activation, and nudge flags for
+      product-led growth campaigns.
+    columns:
+      - name: organization_id
+        tests: [not_null, unique]
+      - name: is_activated
+        description: TRUE if all four trial goals are complete.
+      - name: activated_at
+        description: Timestamp at which final goal was completed. NULL if not activated.
+      - name: days_to_activation
+        description: Float. Days from trial start to activation. NULL if not activated.
+      - name: activation_stage
+        description: >
+          Ordered funnel stage label for the deepest goal completed.
+          Values (ordered): 0_no_goal_met → 1_early_schedule →
+          2_live_operations → 3_approval_workflow → 4_sustained_return →
+          5_fully_activated.
+      - name: nudge_mobile_adoption
+        description: TRUE if G1 met but G2 not met and not yet converted.
+      - name: nudge_approval_workflow
+        description: TRUE if G2 met but G3 not met and not yet converted.
+      - name: nudge_reengagement
+        description: TRUE if G1–G3 met but G4 not met and not yet converted.
+      - name: priority_sales_outreach
+        description: TRUE if fully activated but not yet converted.
