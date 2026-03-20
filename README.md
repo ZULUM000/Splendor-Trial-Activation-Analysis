@@ -31,6 +31,15 @@ In this project, I focused on understanding what is really happening during the 
 | **Messaging insight**  | Lower conversion, likely used when issues come up  |
 
 ---
+## Key Findings Visualized
+
+![Weekly Retention Funnel](outputs/fig4_weekly_retention.png)
+
+![Weeks Active vs Conversion](outputs/fig5_weeks_active_conversion.png)
+
+![Time to Convert](outputs/fig7_time_to_convert.png)
+
+![Trial Goals](outputs/fig9_trial_goals.png)
 
 ## Trial Activation Definition
 
