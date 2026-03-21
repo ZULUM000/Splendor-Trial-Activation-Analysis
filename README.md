@@ -1,10 +1,10 @@
-# Splendor Analytics — Trial Activation Challenge
+# Trial Activation Challenge
 
 **Submitted by:** Chukwuebuka Jeremiah Enoch | [@EnochJeremiah6]
 
 ---
 
-## The Problem
+## A definition of What the Analysis is Expected to Produce
 
 Splendor Analytics runs a 30-day free trial for its workforce management platform. About 1 in 5 organisations later convert to a paid plan.
 
