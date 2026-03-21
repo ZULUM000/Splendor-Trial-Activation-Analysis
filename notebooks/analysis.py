@@ -55,9 +55,9 @@ for col in df.columns:
     null_count = df[col].isnull().sum()
     if null_count > 0:
         null_found = True
-        print(f"- {col}: {null_count:,} missing values")
+        print(f"  {col}: {null_count:,} missing values")
 if not null_found:
-    print("- No missing values found")
+    print("  No missing values found")
 
 # remove exact duplicates
 rows_before_dedup = len(df)
@@ -65,8 +65,8 @@ df = df.drop_duplicates()
 rows_removed = rows_before_dedup - len(df)
 
 print("\nAfter removing duplicates:")
-print(f"- Rows remaining: {len(df):,}")
-print(f"- Rows removed: {rows_removed:,}")
+print(f"  Rows remaining: {len(df):,}")
+print(f"  Rows removed: {rows_removed:,}")
 
 # how far into the trial each event happened, and which week it falls in
 df["days_into_trial"] = (df["timestamp"] - df["trial_start"]).dt.total_seconds() / 86400
@@ -110,16 +110,16 @@ df = df[(df["days_into_trial"] >= 0) & (df["days_into_trial"] <= 30)]
 rows_filtered_out = rows_before_filter - len(df)
 
 print("\nTrial window filtering:")
-print(f"- Events removed outside the 0 to 30 day trial window: {rows_filtered_out:,}")
-print(f"- Final cleaned event rows: {len(df):,}")
+print(f"  Events removed outside the 0 to 30 day trial window: {rows_filtered_out:,}")
+print(f"  Final cleaned event rows: {len(df):,}")
 
 # quick consistently check on the converted fields
 bad_true = df[(df["converted"] == True) & (df["converted_at"].isnull())]
 bad_false = df[(df["converted"] == False) & (df["converted_at"].notnull())]
 
 print("\nConversion field consistency checks:")
-print(f"- Organisations marked converted=True but missing converted_at: {bad_true['organization_id'].nunique()}")
-print(f"- Organisations marked converted=False but with converted_at present: {bad_false['organization_id'].nunique()}")
+print(f"  Organisations marked converted=True but missing converted_at: {bad_true['organization_id'].nunique()}")
+print(f"  Organisations marked converted=False but with converted_at present: {bad_false['organization_id'].nunique()}")
 
 # rolling up from events level to one row per organisation
 org_meta = (
@@ -157,9 +157,9 @@ total_orgs = len(org_meta)
 converted_orgs = org_meta["converted"].sum()
 
 print("\nOrganisation-level summary:")
-print(f"- Total organisations: {total_orgs:,}")
-print(f"- Converted organisations: {converted_orgs:,}")
-print(f"- Overall conversion rate: {BASELINE:.1%}")
+print(f"  Total organisations: {total_orgs:,}")
+print(f"  Converted organisations: {converted_orgs:,}")
+print(f"  Overall conversion rate: {BASELINE:.1%}")
 
 
 #FIGURE 1: Activity volumes
@@ -428,7 +428,7 @@ feat["converted"] = org_conv
 # Method 1: chi-square test per activity
 print("\nMethod 1: Chi-square test for each activity")
 print(f"{'Activity':<46} {'N used':>7} {'CR used':>10} {'CR not used':>12} {'Lift':>8} {'p-value':>10}")
-print("-" * 100)
+print("\n ")
 
 stat_rows = []
 
@@ -476,9 +476,9 @@ nonconv_grp = org_meta[org_meta["converted"] == False]
 for col in ["total_events", "distinct_acts", "active_days", "weeks_active"]:
     stat, p_value = stats.mannwhitneyu(conv_grp[col], nonconv_grp[col], alternative="two-sided")
     print(
-        f"{col:<20} | "
-        f"Converters median: {conv_grp[col].median():.1f} | "
-        f"Non-converters median: {nonconv_grp[col].median():.1f} | "
+        f"{col:<20}   "
+        f"Converters median: {conv_grp[col].median():.1f}   "
+        f"Non-converters median: {nonconv_grp[col].median():.1f}   "
         f"p-value: {p_value:.4f}"
     )
 
@@ -699,10 +699,10 @@ for col in [
     lift = cr / BASELINE
 
     print(
-        f"- {col}: "
-        f"{n} organisations | "
-        f"share = {pct:.1%} | "
-        f"conversion rate = {cr:.3f} | "
+        f"  {col}: "
+        f"{n} organisations   "
+        f"share = {pct:.1%}   "
+        f"conversion rate = {cr:.3f}   "
         f"lift = {lift:.2f}x"
     )
 
@@ -764,7 +764,7 @@ print("\nSaved: fig9_trial_goals.png")
 print("\nTASK 3: DESCRIPTIVE ANALYTICS AND PRODUCT METRICS")
 
 print("\nCore trial metrics")
-print("-" * 70)
+print("\n ")
 print(f"{'Total trial organisations':<50} {total_orgs:>12,}")
 print(f"{'Converted to paid':<50} {converted_orgs:>12,}")
 print(f"{'Trial-to-paid conversion rate':<50} {converted_orgs / total_orgs:>12.1%}")
@@ -783,8 +783,7 @@ print(f"{'Median events per organisation':<50} {org_meta['total_events'].median(
 print(f"{'Median distinct activities per organisation':<50} {org_meta['distinct_acts'].median():>12.0f}")
 
 print("\nModule-level summary")
-print("-" * 70)
-print(f"{'Module':<28} {'Adoption':>10} {'Conv Rate':>12} {'Lift':>8}")
+print(f"\n{'Module':<28} {'Adoption':>10} {'Conv Rate':>12} {'Lift':>8}")
 
 for module_name, module_mask in mods.items():
     module_orgs = set(df.loc[module_mask, "organization_id"])
