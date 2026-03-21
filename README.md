@@ -31,6 +31,82 @@ In this project, I focused on understanding what is really happening during the 
 | **Messaging insight**  | Lower conversion, likely used when issues come up  |
 
 ---
+## Key Findings Visualized
+
+![Activity Volume](outputs/fig1_activity_volume.png)
+**Shift creation dominates all activity.** After removing 67,631 duplicate 
+rows, Scheduling.Shift.Created accounts for the majority of events, confirming 
+that scheduling is the core entry point to the platform. The top 5 activities 
+are highlighted; everything else is secondary.
+
+---
+
+![Activity Conversion Lift](outputs/fig2_activity_conversion_lift.png)
+**No single activity is a magic conversion lever.** For every activity, we 
+compared the conversion rate of orgs that used it vs those that didn't. 
+None of the differences are statistically significant (all p > 0.05). This is 
+an honest and important finding, conversion is driven by depth of engagement, 
+not any one action.
+
+---
+
+![Cohort Conversion](outputs/fig3_cohort_conversion.png)
+**Conversion rate is stable across cohorts.** Organisations that started their 
+trial in January, February, and March 2024 all converted at roughly the same 
+rate (~21–23%). This rules out seasonality as a factor and confirms the 
+dataset is consistent across the full period.
+
+---
+
+![Weekly Retention Funnel](outputs/fig4_weekly_retention.png)
+**The Week 1 → Week 2 cliff is the biggest problem in the funnel.** 95.7% of 
+organisations are active in Week 1, but only 21.3% return in Week 2, a 78% 
+drop. Fixing this single transition is more impactful than optimising any 
+individual feature.
+
+---
+
+![Weeks Active vs Conversion](outputs/fig5_weeks_active_conversion.png)
+**Multi-week engagement is the strongest conversion signal in the data.** 
+Organisations active in 3 trial weeks convert at 30.9%, the highest of any 
+segment and 1.45x the 21.3% baseline. This finding directly shaped Goal 4 
+of our Trial Activation definition.
+
+---
+
+![Module Adoption](outputs/fig6_module_adoption.png)
+**Scheduling is near-universal but most modules are underused.** While 88.2% 
+of orgs use scheduling, only 47.2% use the mobile app and 21.8% use the punch 
+clock. Notably, the Communication module correlates negatively with conversion 
+(16.6% CR), likely because struggling orgs use it for support escalation.
+
+---
+
+![Time to Convert](outputs/fig7_time_to_convert.png)
+**Conversion is a post-trial decision, not an in-trial one.** Zero 
+organisations convert in the first 14 days. 51.9% convert after the trial 
+ends entirely. This structural finding explains why our ML models score near 
+random (AUC ~0.52), the conversion decision is driven by post-trial sales 
+and procurement processes invisible in the behavioural log.
+
+---
+
+![RFM Segments](outputs/fig8_rfm_segments.png)
+**The 'Loyal' segment is the highest-value group.** Using RFM-style 
+segmentation (recency, frequency, breadth of activity), the Loyal segment, 
+organisations active across multiple weeks with varied feature usage,
+converts at 31.4%, 1.47x the baseline. The 'Returning' segment paradoxically 
+converts at only 3.3%, suggesting passive re-visits without real engagement 
+do not signal intent.
+
+---
+
+![Trial Goals](outputs/fig9_trial_goals.png)
+**Trial Activation is achieved by completing all four goals.** The left chart 
+shows how many organisations completed each goal. The right chart shows the 
+conversion rate at each goal, all above baseline, with Goal 4 (sustained 
+return) showing the highest lift at 1.16x. 64 organisations (6.6% of the 
+cohort) achieved full Trial Activation.
 
 ## Trial Activation Definition
 
