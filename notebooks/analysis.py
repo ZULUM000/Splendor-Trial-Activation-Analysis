@@ -13,8 +13,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler
 
-
-# Basic plotting settings
 plt.rcParams.update({
     "figure.dpi": 140,
     "axes.spines.top": False,
@@ -24,14 +22,12 @@ plt.rcParams.update({
     "font.family": "DejaVu Sans",
 })
 
-# Project colors
 INDIGO = "#4F46E5"
 GREEN = "#10B981"
 RED = "#EF4444"
 AMBER = "#F59E0B"
 SLATE = "#64748B"
 
-# File paths
 RAW = "../data/Copy of DA task.csv"
 OUT = "../outputs"
 
