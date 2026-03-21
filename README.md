@@ -1,4 +1,4 @@
-# Splendor Analytics — Trial Activation Challenge
+# Trial Activation Challenge
 
 **Submitted by:** Chukwuebuka Jeremiah Enoch | [@EnochJeremiah6]
 
